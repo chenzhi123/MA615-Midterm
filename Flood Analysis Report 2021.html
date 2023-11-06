@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Zengqi Chen">
+
+<title>Flood Analysis Report 2021</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Flood Analysis Report 2021_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Flood Analysis Report 2021_files/libs/quarto-html/quarto.js"></script>
+<script src="Flood Analysis Report 2021_files/libs/quarto-html/popper.min.js"></script>
+<script src="Flood Analysis Report 2021_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Flood Analysis Report 2021_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Flood Analysis Report 2021_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Flood Analysis Report 2021_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Flood Analysis Report 2021_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Flood Analysis Report 2021_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Flood Analysis Report 2021_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Flood Analysis Report 2021</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Zengqi Chen </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="question" class="level1">
+<h1>Question</h1>
+<ol type="1">
+<li><p>How dangerous are floods?</p></li>
+<li><p>How expensive?</p></li>
+<li><p>Is there any pattern to the kinds of communities that suffer losses from floods?</p></li>
+</ol>
+</section>
+<section id="fema" class="level1">
+<h1>Fema</h1>
+<section id="load-and-filter-the-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="load-and-filter-the-dataset">Load and Filter the Dataset</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the data</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>flood_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"DisasterDeclarationsSummaries.csv"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>fema_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"FemaWebDisasterSummaries.csv"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the flood_data for flood-related incidents</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>flood_data_filtered <span class="ot">&lt;-</span> <span class="fu">filter</span>(flood_data, incidentType <span class="sc">==</span> <span class="st">'Flood'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="clean-and-merge" class="level2">
+<h2 class="anchored" data-anchor-id="clean-and-merge">Clean and Merge</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># convert the date columns to Date for easier manipulation</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>date_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'declarationDate'</span>, <span class="st">'incidentBeginDate'</span>, <span class="st">'incidentEndDate'</span>, <span class="st">'disasterCloseoutDate'</span>, <span class="st">'lastIAFilingDate'</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (col <span class="cf">in</span> date_columns) {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  flood_data_filtered[[col]] <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(flood_data_filtered[[col]])</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop columns with a large number of missing values or that are not useful for our analysis</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>columns_to_drop <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'lastIAFilingDate'</span>, <span class="st">'lastRefresh'</span>, <span class="st">'hash'</span>, <span class="st">'id'</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>flood_data_filtered <span class="ot">&lt;-</span> <span class="fu">select</span>(flood_data_filtered, <span class="sc">-</span><span class="fu">all_of</span>(columns_to_drop))</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Since the fema_data has many columns with all missing values, we will drop those as well</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>fema_data <span class="ot">&lt;-</span> fema_data <span class="sc">%&gt;%</span> <span class="fu">select_if</span>(<span class="sc">~</span><span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(.)) <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the datasets based on 'disasterNumber'</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">merge</span>(flood_data_filtered, fema_data, <span class="at">by=</span><span class="st">'disasterNumber'</span>, <span class="at">all.x=</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="danger-cost-and-community-patterns-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="danger-cost-and-community-patterns-analysis">Danger, Cost and Community Patterns Analysis</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Analyzing the danger of floods by looking at the duration and the number of incidents</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>merged_data<span class="sc">$</span>duration <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(merged_data<span class="sc">$</span>incidentEndDate <span class="sc">-</span> merged_data<span class="sc">$</span>incidentBeginDate)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>flood_danger_analysis <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Total Incidents'</span> <span class="ot">=</span> <span class="fu">length</span>(<span class="fu">unique</span>(merged_data<span class="sc">$</span>disasterNumber)),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Average Duration (days)'</span> <span class="ot">=</span> <span class="fu">mean</span>(merged_data<span class="sc">$</span>duration, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Max Duration (days)'</span> <span class="ot">=</span> <span class="fu">max</span>(merged_data<span class="sc">$</span>duration, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Min Duration (days)'</span> <span class="ot">=</span> <span class="fu">min</span>(merged_data<span class="sc">$</span>duration, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Cost Analysis</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>flood_cost_analysis <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Total Amount IHP Approved'</span> <span class="ot">=</span> <span class="fu">sum</span>(merged_data<span class="sc">$</span>totalAmountIhpApproved, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Total Amount HA Approved'</span> <span class="ot">=</span> <span class="fu">sum</span>(merged_data<span class="sc">$</span>totalAmountHaApproved, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Total Amount ONA Approved'</span> <span class="ot">=</span> <span class="fu">sum</span>(merged_data<span class="sc">$</span>totalAmountOnaApproved, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">'Total Obligated Amount HMG'</span> <span class="ot">=</span> <span class="fu">sum</span>(merged_data<span class="sc">$</span>totalObligatedAmountHmgp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Community Patterns: We will explore the frequency of floods by state</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>flood_community_patterns <span class="ot">&lt;-</span> <span class="fu">head</span>(<span class="fu">sort</span>(<span class="fu">table</span>(merged_data<span class="sc">$</span>state), <span class="at">decreasing =</span> <span class="cn">TRUE</span>), <span class="dv">10</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(flood_danger_analysis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Total.Incidents Average.Duration..days. Max.Duration..days.
+1             879                25.66008                 230
+  Min.Duration..days.
+1                   0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(flood_cost_analysis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Total.Amount.IHP.Approved Total.Amount.HA.Approved Total.Amount.ONA.Approved
+1               62861128661              53187567053                9673561606
+  Total.Obligated.Amount.HMG
+1                34841401700</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(flood_community_patterns)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ IA  MN  ND  MO  TX  KY  CA  SD  NE  LA 
+729 687 674 522 503 494 448 424 376 363 </code></pre>
+</div>
+</div>
+<p>Danger Analysis:</p>
+<ul>
+<li><p>Total Incidents: 879 different flood events.</p></li>
+<li><p>Average Duration: The average duration of flood events is approximately 25.66 days.</p></li>
+<li><p>Max Duration: The longest flood event lasted 230 days.</p></li>
+<li><p>Min Duration: The shortest flood event in the records lasted 0 days (possibly an event that started and ended on the same day).</p></li>
+</ul>
+<p>Cost Analysis:</p>
+<ul>
+<li><p>Total Amount IHP Approved: Approximately 628.6 billion US dollars.</p></li>
+<li><p>Total Amount HA Approved: Approximately 531.9 billion US dollars.</p></li>
+<li><p>Total Amount ONA Approved: Approximately 96.7 billion US dollars.</p></li>
+<li><p>Total Obligated Amount HMG: Approximately 348.4 billion US dollars.</p></li>
+</ul>
+<p>Community Patterns Analysis:</p>
+<p>Based on the frequency of flood events by state, here are the top ten states where floods occur most frequently:</p>
+<ul>
+<li><p>IA (Iowa): 729 times</p></li>
+<li><p>MN (Minnesota): 687 times</p></li>
+<li><p>ND (North Dakota): 674 times</p></li>
+<li><p>MO (Missouri): 522 times</p></li>
+<li><p>TX (Texas): 503 times</p></li>
+<li><p>KY (Kentucky): 494 times</p></li>
+<li><p>CA (California): 448 times</p></li>
+<li><p>SD (South Dakota): 424 times</p></li>
+<li><p>NE (Nebraska): 376 times</p></li>
+<li><p>LA (Louisiana): 363 times</p></li>
+</ul>
+</section>
+<section id="visualizations" class="level2">
+<h2 class="anchored" data-anchor-id="visualizations">Visualizations</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merged_data, <span class="fu">aes</span>(<span class="at">x=</span>duration)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">30</span>,<span class="at">fill=</span><span class="st">'steelblue'</span>) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Distribution of Flood Durations'</span>) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Duration in Days'</span>) <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">'Number of Flood Events'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">State=</span><span class="fu">names</span>(flood_community_patterns), <span class="at">Count=</span><span class="fu">as.vector</span>(flood_community_patterns)), <span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(State, <span class="sc">-</span>Count), <span class="at">y=</span>Count)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">'identity'</span>,<span class="at">fill=</span><span class="st">'coral'</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Top 10 States Affected by Floods'</span>) <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'State'</span>) <span class="sc">+</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">'Number of Flood Events'</span>) <span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>flood_cost_data <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">select</span>(merged_data, <span class="fu">contains</span>(<span class="st">'Approved'</span>), <span class="fu">contains</span>(<span class="st">'Hmgp'</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>flood_cost_data <span class="ot">&lt;-</span> flood_cost_data[<span class="fu">order</span>(flood_cost_data, <span class="at">decreasing =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">Type=</span><span class="fu">names</span>(flood_cost_data), <span class="at">Amount=</span>flood_cost_data), <span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(Type, Amount), <span class="at">y=</span>Amount<span class="sc">/</span><span class="fl">1e9</span>)) <span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">'identity'</span>, <span class="at">fill=</span><span class="st">'goldenrod'</span>) <span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Total Costs by Assistance Type'</span>) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Type of Assistance'</span>) <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">'Total Amount (in billions)'</span>) <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-4-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>flood_community_cost <span class="ot">&lt;-</span> merged_data <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">contains</span>(<span class="st">'Approved'</span>), sum, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Total_Cost =</span> <span class="fu">rowSums</span>(<span class="fu">select</span>(., <span class="fu">contains</span>(<span class="st">'Approved'</span>))))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>top_states_by_cost <span class="ot">&lt;-</span> <span class="fu">head</span>(flood_community_cost[<span class="fu">order</span>(<span class="sc">-</span>flood_community_cost<span class="sc">$</span>Total_Cost), ], <span class="dv">10</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_states_by_cost, <span class="fu">aes</span>(<span class="at">x=</span><span class="fu">reorder</span>(state, <span class="sc">-</span>Total_Cost), <span class="at">y=</span>Total_Cost<span class="sc">/</span><span class="fl">1e9</span>)) <span class="sc">+</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat=</span><span class="st">'identity'</span>, <span class="at">fill=</span><span class="st">'tomato'</span>) <span class="sc">+</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">'Top 10 States by Total Flood Cost'</span>) <span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'State'</span>) <span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">'Total Cost (in billions)'</span>) <span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>, <span class="at">hjust=</span><span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-4-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="distribution-of-flood-durations" class="level3">
+<h3 class="anchored" data-anchor-id="distribution-of-flood-durations">Distribution of Flood Durations</h3>
+<ul>
+<li>This histogram provides insights into how long flood events typically last. A well-distributed histogram would indicate a wide range of flood durations, while a skewed histogram could show a common duration length. For instance, a right-skewed distribution would mean that most flood events are short, but there are occasional long-lasting events.</li>
+</ul>
+</section>
+<section id="top-10-states-affected-by-floods" class="level3">
+<h3 class="anchored" data-anchor-id="top-10-states-affected-by-floods">Top 10 States Affected by Floods</h3>
+<ul>
+<li>The bar chart for the top 10 states affected by floods would show the frequency of flood events in each state. States with higher bars would be those more frequently affected by floods. This could indicate regions with higher vulnerability or areas that are naturally prone to flooding. Policy makers could use this data to allocate resources for flood management and preparedness programs.</li>
+</ul>
+</section>
+<section id="total-costs-by-assistance-type" class="level3">
+<h3 class="anchored" data-anchor-id="total-costs-by-assistance-type">Total Costs by Assistance Type</h3>
+<ul>
+<li>A bar chart showing the total costs associated with different types of assistance would help in understanding where the financial burden from floods is most concentrated. High costs in individual assistance could indicate a severe impact on personal property and living situations, while high costs in public assistance might reflect infrastructure damage.</li>
+</ul>
+</section>
+<section id="top-10-states-by-total-flood-cost" class="level3">
+<h3 class="anchored" data-anchor-id="top-10-states-by-total-flood-cost">Top 10 States by Total Flood Cost</h3>
+<ul>
+<li>This bar chart would provide a view of which states incurred the highest costs from floods. States with higher costs might be experiencing more severe floods or have higher-value properties and infrastructure at risk. This information could be crucial for insurance companies, federal aid allocation, and for states to plan their budgets for disaster management.</li>
+</ul>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<ol type="1">
+<li><p><strong>Duration of Floods</strong>: The distribution of flood durations indicates that while most flood events may be of short duration, there are significant outliers with much longer durations.</p></li>
+<li><p><strong>Frequency by State</strong>: The analysis of the top 10 states affected by floods reveals that certain regions are more prone to flooding than others. These states may need to prioritize flood management and disaster preparedness to mitigate the impacts of future flood events.</p></li>
+<li><p><strong>Economic Impact</strong>: The cost analysis highlights the substantial economic burden of flood events. The data shows significant financial assistance has been provided for housing and individual assistance, suggesting that floods have a considerable direct impact on individuals and their homes. The high costs associated with public assistance also indicate that infrastructure and public services are notably affected.</p></li>
+<li><p><strong>Community Patterns</strong>: The pattern of flood costs by state suggests that some communities bear a disproportionate share of the economic impact. This could be due to a combination of factors such as the frequency of flooding, the value of property at risk, the effectiveness of flood defenses, and the socioeconomic status of the affected areas.</p></li>
+</ol>
+</section>
+</section>
+<section id="noaa" class="level1">
+<h1>Noaa</h1>
+<section id="load-and-filter-the-dataset-1" class="level2">
+<h2 class="anchored" data-anchor-id="load-and-filter-the-dataset-1">Load and Filter the Dataset</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the storm event details CSV file for 2021</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>details_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"StormEvents_details-ftp_v1.0_d2021_c20231017.csv"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of the dataframe to inspect its content</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co">#head(details_df)</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the dataset for flood-related events: "Flash Flood" and "Flood"</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>flood_events_df <span class="ot">&lt;-</span> <span class="fu">filter</span>(details_df, EVENT_TYPE <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">'Flash Flood'</span>, <span class="st">'Flood'</span>))</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of the filtered dataframe</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="co"># head(flood_events_df)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="descriptive-statistics" class="level2">
+<h2 class="anchored" data-anchor-id="descriptive-statistics">Descriptive Statistics</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Descriptive statistics for flood events</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Total number of flood events</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>total_flood_events <span class="ot">&lt;-</span> <span class="fu">nrow</span>(flood_events_df)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># States with the most flood events</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>states_flood_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(flood_events_df, STATE) <span class="sc">%&gt;%</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">5</span>, n) <span class="sc">%&gt;%</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Months with the most flood events</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>flood_events_df <span class="ot">&lt;-</span> <span class="fu">mutate</span>(flood_events_df, <span class="at">BEGIN_MONTH =</span> <span class="fu">month</span>(<span class="fu">ymd</span>(BEGIN_YEARMONTH, <span class="at">truncated =</span> <span class="dv">2</span>)))</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>months_flood_counts <span class="ot">&lt;-</span> <span class="fu">count</span>(flood_events_df, BEGIN_MONTH) <span class="sc">%&gt;%</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(BEGIN_MONTH)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Damage estimates function</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>convert_damage <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.na</span>(d) <span class="sc">|</span> d <span class="sc">==</span> <span class="st">""</span>) {</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="dv">0</span>)</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    multiplier <span class="ot">&lt;-</span> <span class="fu">match</span>(<span class="fu">substring</span>(d, <span class="fu">nchar</span>(d)), <span class="fu">c</span>(<span class="st">"K"</span>, <span class="st">"M"</span>, <span class="st">"B"</span>), <span class="at">nomatch =</span> <span class="dv">0</span>)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    number <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">substring</span>(d, <span class="dv">1</span>, <span class="fu">nchar</span>(d) <span class="sc">-</span> <span class="dv">1</span>))</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(number <span class="sc">*</span> (<span class="dv">10</span><span class="sc">^</span>(multiplier <span class="sc">*</span> <span class="dv">3</span>)))</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Applying the damage conversion to property and crops</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>flood_events_df <span class="ot">&lt;-</span> <span class="fu">mutate</span>(flood_events_df,</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>                          <span class="at">DAMAGE_PROPERTY_NUM =</span> <span class="fu">sapply</span>(DAMAGE_PROPERTY, convert_damage),</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>                          <span class="at">DAMAGE_CROPS_NUM =</span> <span class="fu">sapply</span>(DAMAGE_CROPS, convert_damage))</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Summing total damage, fatalities, and injuries</span></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>total_damage_property <span class="ot">&lt;-</span> <span class="fu">sum</span>(flood_events_df<span class="sc">$</span>DAMAGE_PROPERTY_NUM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>total_damage_crops <span class="ot">&lt;-</span> <span class="fu">sum</span>(flood_events_df<span class="sc">$</span>DAMAGE_CROPS_NUM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>total_damage <span class="ot">&lt;-</span> total_damage_property <span class="sc">+</span> total_damage_crops</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>total_fatalities <span class="ot">&lt;-</span> <span class="fu">sum</span>(flood_events_df<span class="sc">$</span>DEATHS_DIRECT, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">sum</span>(flood_events_df<span class="sc">$</span>DEATHS_INDIRECT, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>total_injuries <span class="ot">&lt;-</span> <span class="fu">sum</span>(flood_events_df<span class="sc">$</span>INJURIES_DIRECT, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">sum</span>(flood_events_df<span class="sc">$</span>INJURIES_INDIRECT, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>descriptive_stats <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_Flood_Events =</span> total_flood_events,</span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">States_with_Most_Floods =</span> states_flood_counts,</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">Month_Distribution =</span> months_flood_counts,</span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_Damage_Property =</span> total_damage_property,</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_Damage_Crops =</span> total_damage_crops,</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_Damage =</span> total_damage,</span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_Fatalities =</span> total_fatalities,</span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">Total_Injuries =</span> total_injuries</span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-50"><a href="#cb14-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Print out the descriptive statistics list</span></span>
+<span id="cb14-51"><a href="#cb14-51" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(descriptive_stats)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Total_Flood_Events
+[1] 6828
+
+$States_with_Most_Floods
+# A tibble: 5 × 2
+  STATE        n
+  &lt;chr&gt;    &lt;int&gt;
+1 TEXAS      503
+2 NEW YORK   442
+3 ARIZONA    410
+4 KENTUCKY   396
+5 VIRGINIA   387
+
+$Month_Distribution
+# A tibble: 12 × 2
+   BEGIN_MONTH     n
+         &lt;dbl&gt; &lt;int&gt;
+ 1           1   167
+ 2           2   208
+ 3           3   641
+ 4           4   227
+ 5           5   517
+ 6           6   919
+ 7           7  1422
+ 8           8  1150
+ 9           9   904
+10          10   494
+11          11    42
+12          12   137
+
+$Total_Damage_Property
+[1] 2578098110
+
+$Total_Damage_Crops
+[1] 33313520
+
+$Total_Damage
+[1] 2611411630
+
+$Total_Fatalities
+[1] 150
+
+$Total_Injuries
+[1] 70</code></pre>
+</div>
+</div>
+<p>Here are some key findings from the descriptive statistics of flood events for 2021:</p>
+<ul>
+<li><p><strong>Total Flood Events</strong>: There were 6,828 flood events reported.</p></li>
+<li><p><strong>States with Most Floods</strong>: The states with the highest number of reported flood events were Texas (503 events), New York (442 events), Arizona (410 events), Kentucky (396 events), and Virginia (387 events).</p></li>
+<li><p><strong>Month Distribution</strong>: Flood events peaked in July (1,422 events), followed by August (1,150 events) and June (919 events), suggesting a higher frequency of flooding during the summer months.</p></li>
+<li><p><strong>Total Damage</strong>:</p>
+<ul>
+<li><p>Property damage from floods amounted to approximately $2.578 billion.</p></li>
+<li><p>Crop damage was about $33.31 million.</p></li>
+<li><p>The combined total estimated damage was approximately $2.611 billion.</p></li>
+</ul></li>
+<li><p><strong>Total Fatalities and Injuries</strong>:</p>
+<ul>
+<li><p>There were 150 reported fatalities related to flood events.</p></li>
+<li><p>There were 70 reported injuries due to flood events.</p></li>
+</ul></li>
+</ul>
+</section>
+<section id="visualizations-1" class="level2">
+<h2 class="anchored" data-anchor-id="visualizations-1">Visualizations</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to plot data</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> <span class="cf">function</span>(data, x, y, title, xlabel, ylabel, <span class="at">kind =</span> <span class="st">'bar'</span>) {</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(data, <span class="fu">aes_string</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> title, <span class="at">x =</span> xlabel, <span class="at">y =</span> ylabel) <span class="sc">+</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (kind <span class="sc">==</span> <span class="st">'bar'</span>) {</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    p <span class="sc">+</span> <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'identity'</span>, <span class="at">fill =</span> <span class="st">'turquoise3'</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (kind <span class="sc">==</span> <span class="st">'line'</span>) {</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    p <span class="sc">+</span> <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">'steelblue'</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">'darkorange'</span>, <span class="at">size =</span> <span class="dv">3</span>)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="co"># States with the most flood events plot</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>states_flood_counts_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(states_flood_counts)</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_data</span>(states_flood_counts_df, <span class="st">'STATE'</span>, <span class="st">'n'</span>, <span class="st">'Top 5 States with Most Flood Events in 2021'</span>, <span class="st">'State'</span>, <span class="st">'Number of Flood Events'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Month Distribution of Flood Events plot</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>months_flood_counts_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(months_flood_counts)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_data</span>(months_flood_counts_df, <span class="st">'BEGIN_MONTH'</span>, <span class="st">'n'</span>, <span class="st">'Month Distribution of Flood Events in 2021'</span>, <span class="st">'Month'</span>, <span class="st">'Number of Flood Events'</span>, <span class="st">'line'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of Damage to Property</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>non_zero_property_damage <span class="ot">&lt;-</span> <span class="fu">filter</span>(flood_events_df, DAMAGE_PROPERTY_NUM <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(non_zero_property_damage, <span class="fu">aes</span>(<span class="at">x =</span> DAMAGE_PROPERTY_NUM)) <span class="sc">+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">fill =</span> <span class="st">'blue'</span>) <span class="sc">+</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>(<span class="at">labels =</span> comma) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Histogram of Property Damage Due to Floods in 2021'</span>, <span class="at">x =</span> <span class="st">'Damage to Property '</span>, <span class="at">y =</span> <span class="st">'Frequency'</span>) <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-7-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram of Damage to Crops</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>non_zero_crop_damage <span class="ot">&lt;-</span> <span class="fu">filter</span>(flood_events_df, DAMAGE_CROPS_NUM <span class="sc">&gt;</span> <span class="dv">0</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(non_zero_crop_damage, <span class="fu">aes</span>(<span class="at">x =</span> DAMAGE_CROPS_NUM)) <span class="sc">+</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">30</span>, <span class="at">fill =</span> <span class="st">'orange'</span>) <span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>(<span class="at">labels =</span> comma) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Histogram of Crop Damage Due to Floods in 2021'</span>, <span class="at">x =</span> <span class="st">'Damage to Crops'</span>, <span class="at">y =</span> <span class="st">'Frequency'</span>) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-7-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ol type="1">
+<li><p><strong>Top 5 States with Most Flood Events in 2021</strong>:</p>
+<ul>
+<li>The bar chart shows Texas, New York, Arizona, Kentucky, and Virginia as the top states affected by flood events.</li>
+</ul></li>
+<li><p><strong>Month Distribution of Flood Events in 2021</strong>:</p>
+<ul>
+<li>The line chart indicates that flood events were more frequent during the summer months, with a peak in July.</li>
+</ul></li>
+<li><p><strong>Histogram of Property Damage Due to Floods in 2021</strong>:</p>
+<ul>
+<li>The histogram indicates that while many events result in lower damage costs, a few events can cause very high property damage.</li>
+</ul></li>
+<li><p><strong>Histogram of Crop Damage Due to Floods in 2021</strong>:</p>
+<ul>
+<li>Similarly, the histogram for crop damage demonstrates the frequency of different levels of crop damage due to flood events.</li>
+</ul></li>
+</ol>
+</section>
+<section id="merge-with-fatalities-and-locations" class="level2">
+<h2 class="anchored" data-anchor-id="merge-with-fatalities-and-locations">Merge with fatalities and locations</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the CSV files into DataFrames</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>fatalities_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"StormEvents_fatalities-ftp_v1.0_d2021_c20231017.csv"</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>locations_df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"StormEvents_locations-ftp_v1.0_d2021_c20231017.csv"</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of each dataframe to inspect its content</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fatalities_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 11
+  FAT_YEARMONTH FAT_DAY FAT_TIME FATALITY_ID EVENT_ID FATALITY_TYPE
+          &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;        
+1        202106       9        0       42960   953511 D            
+2        202111      25        0       44786   989138 I            
+3        202111       7        0       45176   992676 I            
+4        202111      11        0       45190   993049 I            
+5        202111      11        0       45191   993049 I            
+6        202111      29        0       45193   993061 I            
+# ℹ 5 more variables: FATALITY_DATE &lt;chr&gt;, FATALITY_AGE &lt;dbl&gt;,
+#   FATALITY_SEX &lt;chr&gt;, FATALITY_LOCATION &lt;chr&gt;, EVENT_YEARMONTH &lt;dbl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(locations_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 11
+  YEARMONTH EPISODE_ID EVENT_ID LOCATION_INDEX RANGE AZIMUTH LOCATION   LATITUDE
+      &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;         &lt;dbl&gt;
+1    202104     156920   948472              1 36.4  SSE     EDGEWATER      28.5
+2    202104     156920   948473              1  3.57 WSW     CAPE CANA…     28.4
+3    202104     156920   948475              1  2.8  WNW     MELBOURNE      28.1
+4    202104     156920   948476              1 11.2  N       CAPE CANA…     28.5
+5    202104     156920   948477              1  1.4  ESE     VALKARIA       28.0
+6    202104     156920   948479              1 10.2  E       VERO BEACH     27.7
+# ℹ 3 more variables: LONGITUDE &lt;dbl&gt;, LAT2 &lt;dbl&gt;, LON2 &lt;dbl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the details and fatalities datasets on 'EVENT_ID'</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">&lt;-</span> <span class="fu">left_join</span>(flood_events_df, fatalities_df, <span class="at">by =</span> <span class="st">'EVENT_ID'</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge the resulting dataset with the locations dataset on 'EVENT_ID'</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">&lt;-</span> <span class="fu">left_join</span>(merged_df, locations_df, <span class="at">by =</span> <span class="st">'EVENT_ID'</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the first few rows of the merged dataset to inspect its content</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="co">#head(merged_df)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li><p>Merge the details and fatalities datasets based on <strong><code>EVENT_ID</code></strong>.</p></li>
+<li><p>Merge the combined dataset with the locations dataset based on <strong><code>EVENT_ID</code></strong></p></li>
+</ol>
+</section>
+<section id="clean" class="level2">
+<h2 class="anchored" data-anchor-id="clean">Clean</h2>
+<p>Here we:</p>
+<ul>
+<li><p>Fill NA values for fatality-related columns with ‘None’</p></li>
+<li><p>Fill NA values for location-related columns with ‘Unknown’</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Cleaning the merged dataset</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove duplicate columns resulted from the merge (those with suffix _x and _y)</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">&lt;-</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"_y"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_remove</span>(., <span class="st">"_x"</span>))</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill NA values for fatality-related columns with 'None'</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>fatality_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'FATALITY_ID'</span>, <span class="st">'FATALITY_TYPE'</span>, <span class="st">'FATALITY_DATE'</span>, <span class="st">'FATALITY_AGE'</span>, <span class="st">'FATALITY_SEX'</span>, <span class="st">'FATALITY_LOCATION'</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>merged_df[fatality_columns] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(merged_df[fatality_columns], <span class="cf">function</span>(x) <span class="fu">ifelse</span>(<span class="fu">is.na</span>(x), <span class="st">'None'</span>, x))</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill NA values for location-related columns with 'Unknown'</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>location_columns <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'LOCATION_INDEX'</span>, <span class="st">'RANGE'</span>, <span class="st">'AZIMUTH'</span>, <span class="st">'LOCATION'</span>, <span class="st">'LATITUDE'</span>, <span class="st">'LONGITUDE'</span>, <span class="st">'LAT2'</span>, <span class="st">'LON2'</span>)</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>merged_df[location_columns] <span class="ot">&lt;-</span> <span class="fu">lapply</span>(merged_df[location_columns], <span class="cf">function</span>(x) <span class="fu">ifelse</span>(<span class="fu">is.na</span>(x), <span class="st">'Unknown'</span>, x))</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Selecting a subset of relevant columns for analysis</span></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>columns_to_keep <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'EVENT_ID'</span>, <span class="st">'STATE'</span>, <span class="st">'YEAR'</span>, <span class="st">'MONTH_NAME'</span>, <span class="st">'EVENT_TYPE'</span>, <span class="st">'BEGIN_DATE_TIME'</span>, <span class="st">'END_DATE_TIME'</span>,</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>                     <span class="st">'EPISODE_NARRATIVE'</span>, <span class="st">'EVENT_NARRATIVE'</span>, <span class="st">'DAMAGE_PROPERTY_NUM'</span>, <span class="st">'DAMAGE_CROPS_NUM'</span>, <span class="st">'DEATHS_DIRECT'</span>, <span class="st">'DEATHS_INDIRECT'</span>,</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>                     <span class="st">'INJURIES_DIRECT'</span>, <span class="st">'INJURIES_INDIRECT'</span>, <span class="st">'FATALITY_TYPE'</span>, <span class="st">'FATALITY_DATE'</span>, <span class="st">'FATALITY_AGE'</span>, <span class="st">'FATALITY_SEX'</span>, <span class="st">'FATALITY_LOCATION'</span>,</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>                     <span class="st">'LOCATION_INDEX'</span>, <span class="st">'RANGE'</span>, <span class="st">'AZIMUTH'</span>, <span class="st">'LOCATION'</span>, <span class="st">'LATITUDE'</span>, <span class="st">'LONGITUDE'</span>)</span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>merged_clean_df <span class="ot">&lt;-</span> <span class="fu">select</span>(merged_df, <span class="fu">all_of</span>(columns_to_keep))</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Look at the first few rows of the cleaned dataset</span></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a><span class="co"># head(merged_clean_df)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="eda" class="level2">
+<h2 class="anchored" data-anchor-id="eda">EDA</h2>
+<p>For the EDA report, we can explore several aspects:</p>
+<ol type="1">
+<li><p><strong>Overview of Flood Events</strong>: Summarize the total number of flood and flash flood events, and their geographic and temporal distribution.</p></li>
+<li><p><strong>Impact Analysis</strong>: Assess the damage caused by floods, including property and crop damage, as well as human casualties and fatalities.</p></li>
+<li><p><strong>Narrative Insights</strong></p></li>
+<li><p><strong>Geospatial Analysis</strong>:</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert BEGIN_DATE_TIME to Date-Time object and create a new MONTH column</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>merged_clean_df <span class="ot">&lt;-</span> merged_clean_df <span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">BEGIN_DATE_TIME =</span> <span class="fu">ymd_hms</span>(BEGIN_DATE_TIME),</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">MONTH =</span> <span class="fu">floor_date</span>(BEGIN_DATE_TIME, <span class="st">"month"</span>)</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Aggregating property and crop damage by month</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>monthly_damage <span class="ot">&lt;-</span> merged_clean_df <span class="sc">%&gt;%</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(MONTH) <span class="sc">%&gt;%</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Property_Damage =</span> <span class="fu">sum</span>(DAMAGE_PROPERTY_NUM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Crop_Damage =</span> <span class="fu">sum</span>(DAMAGE_CROPS_NUM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram for the distribution of damage</span></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merged_clean_df, <span class="fu">aes</span>(<span class="at">x =</span> DAMAGE_PROPERTY_NUM)) <span class="sc">+</span></span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">'blue'</span>, <span class="at">colour =</span> <span class="st">'black'</span>) <span class="sc">+</span></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>comma, <span class="at">trans =</span> <span class="st">'log10'</span>) <span class="sc">+</span></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Distribution of Property Damage Due to Floods in 2021'</span>, <span class="at">x =</span> <span class="st">'Damage to Property (log scale)'</span>, <span class="at">y =</span> <span class="st">'Frequency'</span>) <span class="sc">+</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram for the distribution of casualties</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(merged_clean_df, <span class="fu">aes</span>(<span class="at">x =</span> DEATHS_DIRECT <span class="sc">+</span> DEATHS_INDIRECT)) <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">1</span>, <span class="at">fill =</span> <span class="st">'red'</span>, <span class="at">colour =</span> <span class="st">'black'</span>) <span class="sc">+</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Distribution of Fatalities Due to Floods in 2021'</span>, <span class="at">x =</span> <span class="st">'Number of Fatalities'</span>, <span class="at">y =</span> <span class="st">'Frequency'</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Breakdown of damage and fatalities by state</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>state_damage_fatalities <span class="ot">&lt;-</span> merged_clean_df <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(STATE) <span class="sc">%&gt;%</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Property_Damage =</span> <span class="fu">sum</span>(DAMAGE_PROPERTY_NUM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Crop_Damage =</span> <span class="fu">sum</span>(DAMAGE_CROPS_NUM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Fatalities =</span> <span class="fu">sum</span>(DEATHS_DIRECT <span class="sc">+</span> DEATHS_INDIRECT, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Event_Count =</span> <span class="fu">n_distinct</span>(EVENT_ID)</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Total_Damage =</span> Total_Property_Damage <span class="sc">+</span> Total_Crop_Damage) <span class="sc">%&gt;%</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Total_Damage))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li><p><strong>Distribution of Property Damage Due to Floods</strong>:</p>
+<ul>
+<li>The histogram, plotted on a logarithmic scale for the x-axis, shows the distribution of property damage amounts. This illustrates that while there are many events with lower levels of damage, there are a few events that result in very high property damage.</li>
+</ul></li>
+<li><p><strong>Distribution of Fatalities Due to Floods</strong>:</p>
+<ul>
+<li>The histogram for fatalities displays the frequency of different fatality counts due to flood events. This highlights that most flood events do not result in fatalities, but there are events with significant loss of life.</li>
+</ul></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>damage_data <span class="ot">&lt;-</span> merged_clean_df <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Property_Damage =</span> <span class="fu">sum</span>(DAMAGE_PROPERTY_NUM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Total_Crop_Damage =</span> <span class="fu">sum</span>(DAMAGE_CROPS_NUM, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gather</span>(<span class="at">key =</span> <span class="st">"Damage_Type"</span>, <span class="at">value =</span> <span class="st">"Amount"</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(damage_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> Amount, <span class="at">fill =</span> Damage_Type)) <span class="sc">+</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">width =</span> <span class="dv">1</span>, <span class="at">stat =</span> <span class="st">"identity"</span>) <span class="sc">+</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="st">"y"</span>, <span class="at">start =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Total_Property_Damage"</span> <span class="ot">=</span> <span class="st">"blue"</span>, <span class="st">"Total_Crop_Damage"</span> <span class="ot">=</span> <span class="st">"green"</span>)) <span class="sc">+</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">'Proportion of Property vs Crop Damage Due to Floods in 2021'</span>,</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">''</span>,</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">''</span></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust the dataset to include only the top 10 states by total damage</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>top_states_damage <span class="ot">&lt;-</span> <span class="fu">top_n</span>(state_damage_fatalities, <span class="dv">10</span>, Total_Damage)</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Bar chart for Total Damage by State (Top 10 States)</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_states_damage, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(STATE, Total_Damage), <span class="at">y =</span> Total_Damage)) <span class="sc">+</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">'blue'</span>) <span class="sc">+</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Top 10 States by Total Flood Damage in 2021'</span>, <span class="at">x =</span> <span class="st">'State'</span>, <span class="at">y =</span> <span class="st">'Total Damage'</span>) <span class="sc">+</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust the dataset to include only the top 10 states by total fatalities</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>top_states_fatalities <span class="ot">&lt;-</span> <span class="fu">top_n</span>(state_damage_fatalities, <span class="dv">10</span>, Total_Fatalities)</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Bar chart for Total Fatalities by State (Top 10 States)</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_states_fatalities, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(STATE, Total_Fatalities), <span class="at">y =</span> Total_Fatalities)) <span class="sc">+</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">'red'</span>) <span class="sc">+</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Top 10 States by Total Fatalities Due to Floods in 2021'</span>, <span class="at">x =</span> <span class="st">'State'</span>, <span class="at">y =</span> <span class="st">'Total Fatalities'</span>) <span class="sc">+</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Adjust the dataset to include only the top 10 states by event count</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>top_states_event_count <span class="ot">&lt;-</span> <span class="fu">top_n</span>(state_damage_fatalities, <span class="dv">10</span>, Event_Count)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Bar chart for Event Count by State (Top 10 States)</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top_states_event_count, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">reorder</span>(STATE, Event_Count), <span class="at">y =</span> Event_Count)) <span class="sc">+</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">fill =</span> <span class="st">'green'</span>) <span class="sc">+</span></span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">'Top 10 States by Flood Event Count in 2021'</span>, <span class="at">x =</span> <span class="st">'State'</span>, <span class="at">y =</span> <span class="st">'Event Count'</span>) <span class="sc">+</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Flood-Analysis-Report-2021_files/figure-html/unnamed-chunk-12-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<ol type="1">
+<li><p><strong>Top 10 States by Total Flood Damage</strong>:</p>
+<ul>
+<li>This bar chart shows the states with the highest total damage from floods. Louisiana and New Jersey stand out with the most significant damage, indicating severe flood impacts in these states.</li>
+</ul></li>
+<li><p><strong>Top 10 States by Total Fatalities Due to Floods</strong>:</p>
+<ul>
+<li>The chart highlights the states with the most fatalities due to floods. New Jersey has the highest number of fatalities, which could be due to a combination of factors including population density, the severity of flood events, and the vulnerability of the affected communities.</li>
+</ul></li>
+<li><p><strong>Top 10 States by Flood Event Count</strong>:</p>
+<ul>
+<li>This chart shows the states with the highest number of flood events. It’s interesting to note that a high number of events in a state doesn’t necessarily correlate with higher damage or fatalities, as seen with New York, which had the most events but less damage and fatalities compared to other states.</li>
+</ul></li>
+</ol>
+</section>
+<section id="conclusion-1" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion-1">Conclusion</h2>
+<ol type="1">
+<li><p><strong>Geographical Impact</strong>:</p>
+<ul>
+<li><p>Floods affected a wide range of states across the United States, with Texas, New York, Arizona, Kentucky, and Virginia being the most frequently hit.</p></li>
+<li><p>Louisiana experienced the most significant property damage, indicating the severe impact of flood events there.</p></li>
+<li><p>Despite a high number of flood events, some states like New York witnessed lower levels of damage and fatalities, which could suggest better preparedness or less severe flood conditions.</p></li>
+</ul></li>
+<li><p><strong>Temporal Distribution</strong>:</p>
+<ul>
+<li>Flood events were most frequent during the summer months, with July being the peak month. This pattern underscores the influence of seasonal weather conditions on flooding.</li>
+</ul></li>
+<li><p><strong>Economic Damage</strong>:</p>
+<ul>
+<li><p>The total estimated property and crop damage from floods in 2021 amounted to approximately $2.611 billion, with property damage being the most significant contributor.</p></li>
+<li><p>The financial impact of floods is distributed unevenly across states, with some experiencing disproportionately higher damages.</p></li>
+</ul></li>
+<li><p><strong>Human Toll</strong>:</p>
+<ul>
+<li><p>Floods resulted in 150 fatalities and 70 injuries across the country. New Jersey had the highest number of fatalities, while Tennessee had the most direct fatalities.</p></li>
+<li><p>The data suggests that while many flood events do not result in fatalities, certain events can be particularly deadly.</p></li>
+</ul></li>
+<li><p><strong>Community and Preparedness</strong>:</p>
+<ul>
+<li><p>The data indicates a discrepancy between the number of flood events and their outcomes in terms of damage and fatalities, suggesting varying levels of community resilience and preparedness.</p></li>
+<li><p>States with fewer flood events experienced higher damage and fatalities, pointing to the potential severity of individual events and possibly lower preparedness or resilience levels.</p></li>
+</ul></li>
+</ol>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<ul>
+<li><p>https://www.ncdc.noaa.gov/stormevents/ftp.jsp</p></li>
+<li><p>https://www.fema.gov/openfema-data-page/disaster-declarations-summaries-v2</p></li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
